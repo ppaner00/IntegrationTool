@@ -36,6 +36,10 @@ void runIntegrationTool() {
     // User input for the number of trapezoids
     std::cout << "Enter the number of trapezoids: ";
     std::cin >> n;
+    if (n <= 0) {
+        std::cerr << "Error: Number of trapezoids must be a positive integer." << std::endl;
+        return;
+    }
 
     std::function<double(double)> func;
 
