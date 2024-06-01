@@ -2,6 +2,7 @@
 #include <functional>
 #include <cmath>
 #include <string>
+#include <sstream> 
 #include "exprtk.hpp" // External library
 
 double trapezoidalRule(std::function<double(double)> func, double a, double b, int n);
@@ -83,12 +84,26 @@ double selectFunction(const std::string& funcName, double x) {
     }
 }
 
-// Parsing constants such as PI
+// Parsing constants such as PI and handling arithmetic expressions
 double parseConstant(const std::string& str) {
     if (str == "pi") {
         return M_PI;
     } else {
         try {
+            // Check if the input contains arithmetic expressions
+            size_t pos = str.find('/');
+            if (pos != std::string::npos) {
+                std::string numerator = str.substr(0, pos);
+                std::string denominator = str.substr(pos + 1);
+                return parseConstant(numerator) / parseConstant(denominator);
+            }
+            pos = str.find('*');
+            if (pos != std::string::npos) {
+                // Handle multiplications like "2*pi"
+                std::string left = str.substr(0, pos);
+                std::string right = str.substr(pos + 1);
+                return parseConstant(left) * parseConstant(right);
+            }
             return std::stod(str);
         } catch (const std::invalid_argument& e) {
             std::cerr << "Error: invalid input for interval bounds" << std::endl;
